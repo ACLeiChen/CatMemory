@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">CatMemory</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="preference_file_name">Highest Scores</string>
+    <string name="EASY_MODE">EASY</string>
+    <string name="MIDDLE_MODE">MIDDLE</string>
+    <string name="HARD_MODE">HARD</string>
+    <string name="history_top_score">History Top Score</string>
+    <string name="user1">User 1</string>
+    <string name="user2">User 2</string>
+</resources>
