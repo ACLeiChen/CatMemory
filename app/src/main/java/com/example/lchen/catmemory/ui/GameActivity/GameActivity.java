@@ -1,5 +1,6 @@
 package com.example.lchen.catmemory.ui.GameActivity;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -106,7 +107,7 @@ public class GameActivity extends AppCompatActivity implements BasicGameContract
 
     @Override
     public void showFinalResult(User winner) {
-        //showPopUp(winner);
+        showFinishDialog(winner);
     }
 
     private void showPopUp(User winner){
@@ -119,11 +120,25 @@ public class GameActivity extends AppCompatActivity implements BasicGameContract
         textview.setText("User" + winner.getIndex() + " win!");
     }
 
-    public void restartGame(View view){
-        mPresenter.startGame();
+    private void showFinishDialog(User winner){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("User" + winner.getIndex() + " win!");
+        builder.setPositiveButton(R.string.restart, ((dialog, which) -> {
+            startActivity(getIntent());
+        }));
+        builder.setNegativeButton(R.string.back, ((dialog, which) -> {
+            finish();
+        }));
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
-    public void returnToMain(View view){
-        finish();
+
+    @Override
+    public void onNewIntent(Intent intent){
+        super.onNewIntent(intent);
+        mCardsAdapter = new CardsAdapter(new ArrayList<Card>(0), mCardListener, this);
+        mRecyclerView.setAdapter(mCardsAdapter);
+        mPresenter.startGame();
     }
 
     @Override
