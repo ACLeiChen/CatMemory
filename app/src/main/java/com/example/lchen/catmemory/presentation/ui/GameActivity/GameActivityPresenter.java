@@ -1,11 +1,11 @@
-package com.example.lchen.catmemory.ui.GameActivity;
+package com.example.lchen.catmemory.presentation.ui.GameActivity;
 
+import com.example.lchen.catmemory.data.CardsRepository;
 import com.example.lchen.catmemory.data.GameRecordRepository;
 import com.example.lchen.catmemory.domain.GameLogic;
 import com.example.lchen.catmemory.domain.GameLogicImpl;
-import com.example.lchen.catmemory.model.Card;
-import com.example.lchen.catmemory.model.Difficulty;
-import com.example.lchen.catmemory.ui.BasicGame.BasicGameContract;
+import com.example.lchen.catmemory.domain.model.Card;
+import com.example.lchen.catmemory.domain.model.Difficulty;
 
 import java.util.List;
 
@@ -13,26 +13,21 @@ import java.util.List;
  * Created by Lei Chen on 2018/2/25.
  */
 
-public class GameActivityPresenter implements BasicGameContract.Presenter {
+public class GameActivityPresenter implements GameContract.Presenter {
 
-    private BasicGameContract.View mView;
+    private GameContract.View mView;
 
     private GameLogic mGameLogic;
 
     private Difficulty difficulty;
 
-    private List<Card> mAllCards;
-
-    private GameRecordRepository mGameRecordRepository;
 
     private boolean isGameStarted;
 
-    public GameActivityPresenter(BasicGameContract.View mView, Difficulty difficulty, List<Card> mAllCards, GameRecordRepository mGameRecordRepository) {
+    public GameActivityPresenter(GameContract.View mView, Difficulty difficulty, CardsRepository cardsRepository, GameRecordRepository gameRecordRepository) {
         this.mView = mView;
         this.difficulty = difficulty;
-        this.mAllCards = mAllCards;
-        this.mGameRecordRepository = mGameRecordRepository;
-        this.mGameLogic = new GameLogicImpl(mAllCards, difficulty, this, mGameRecordRepository);
+        this.mGameLogic = new GameLogicImpl(cardsRepository.getCards(), difficulty, this, gameRecordRepository);
     }
 
     @Override
@@ -49,7 +44,7 @@ public class GameActivityPresenter implements BasicGameContract.Presenter {
     public void startGame() {
         isGameStarted = true;
         mGameLogic.onStartGame();
-        //loadCards();
+        loadCards();
     }
 
     @Override
@@ -57,6 +52,8 @@ public class GameActivityPresenter implements BasicGameContract.Presenter {
         isGameStarted = false;
         mGameLogic.onEndGame();
         mView.showFinalResult(mGameLogic.getWinner());
+        updateUserScore(1, 0);
+        updateUserScore(2, 0);
     }
 
     @Override

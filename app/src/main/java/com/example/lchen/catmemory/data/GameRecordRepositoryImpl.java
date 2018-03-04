@@ -3,10 +3,9 @@ package com.example.lchen.catmemory.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v4.util.SimpleArrayMap;
-import android.util.ArrayMap;
 
 import com.example.lchen.catmemory.R;
-import com.example.lchen.catmemory.model.Difficulty;
+import com.example.lchen.catmemory.domain.model.Difficulty;
 
 /**
  * Created by Lei Chen on 2018/2/25.

@@ -1,4 +1,4 @@
-package com.example.lchen.catmemory;
+package com.example.lchen.catmemory.presentation.ui.MainActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,10 +9,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 
-import com.example.lchen.catmemory.model.Difficulty;
-import com.example.lchen.catmemory.ui.GameActivity.GameActivity;
+import com.example.lchen.catmemory.R;
+import com.example.lchen.catmemory.domain.model.Difficulty;
+import com.example.lchen.catmemory.presentation.ui.GameActivity.GameActivity;
 
 import static com.example.lchen.catmemory.MyApplication.getGameRecordRepository;
 
@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
-
     }
 
     public void startEasyMode(View view){

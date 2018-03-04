@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:context="com.example.lchen.catmemory.ui.GameActivity.GameActivity"
+    tools:context=".presentation.ui.GameActivity.GameActivity"
     xmlns:tools="http://schemas.android.com/tools">
 
     <android.support.v7.widget.RecyclerView

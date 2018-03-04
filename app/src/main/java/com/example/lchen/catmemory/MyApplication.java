@@ -2,6 +2,8 @@ package com.example.lchen.catmemory;
 
 import android.app.Application;
 
+import com.example.lchen.catmemory.data.CardsRepository;
+import com.example.lchen.catmemory.data.CardsRepositoryImpl;
 import com.example.lchen.catmemory.data.GameRecordRepository;
 import com.example.lchen.catmemory.data.GameRecordRepositoryImpl;
 
@@ -11,15 +13,22 @@ import com.example.lchen.catmemory.data.GameRecordRepositoryImpl;
 
 public class MyApplication extends Application {
 
-    public static GameRecordRepository mGameRecordRepository;
+    private static GameRecordRepository mGameRecordRepository;
+
+    private static CardsRepository mCardsRepositoryImpl;
 
     @Override
     public void onCreate() {
         super.onCreate();
         mGameRecordRepository = new GameRecordRepositoryImpl(this);
+        mCardsRepositoryImpl = new CardsRepositoryImpl(this);
     }
 
     public static GameRecordRepository getGameRecordRepository() {
         return mGameRecordRepository;
+    }
+
+    public static CardsRepository getCardsRepositoryImpl() {
+        return mCardsRepositoryImpl;
     }
 }

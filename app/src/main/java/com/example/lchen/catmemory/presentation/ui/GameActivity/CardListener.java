@@ -1,6 +1,6 @@
-package com.example.lchen.catmemory.ui.BasicGame;
+package com.example.lchen.catmemory.presentation.ui.GameActivity;
 
-import com.example.lchen.catmemory.model.Card;
+import com.example.lchen.catmemory.domain.model.Card;
 
 /**
  * Created by Lei Chen on 2018/2/24.

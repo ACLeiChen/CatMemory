@@ -1,4 +1,4 @@
-package com.example.lchen.catmemory.model;
+package com.example.lchen.catmemory.domain.model;
 
 /**
  * Created by Lei Chen on 2018/2/25.

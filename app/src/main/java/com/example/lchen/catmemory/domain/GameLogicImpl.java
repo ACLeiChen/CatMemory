@@ -1,9 +1,9 @@
 package com.example.lchen.catmemory.domain;
 
 import com.example.lchen.catmemory.data.GameRecordRepository;
-import com.example.lchen.catmemory.model.Card;
-import com.example.lchen.catmemory.model.Difficulty;
-import com.example.lchen.catmemory.model.User;
+import com.example.lchen.catmemory.domain.model.Card;
+import com.example.lchen.catmemory.domain.model.Difficulty;
+import com.example.lchen.catmemory.domain.model.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,13 +44,14 @@ public class GameLogicImpl implements GameLogic {
         user1 = new User(1);
         user2 = new User(2);
         currentUser = user1;
-        initilizeCards();
+        initializeCards();
     }
 
-    private void initilizeCards() {
+    private void initializeCards() {
         Collections.shuffle(mAllCards);
         generateNewStartingCards(difficulty.getNumberOfCards());
         cleanCachedPair();
+        pairsFound = 0;
     }
 
     private void cleanCachedPair(){
@@ -59,14 +60,14 @@ public class GameLogicImpl implements GameLogic {
 
     private void generateNewStartingCards(int num){
         mStartingCards = new ArrayList<>();
-        int frontImageId;
-        int backImageId;
 
         for(int i = 0; i < num; i++){
-            frontImageId = mAllCards.get(i).getFrontImageId();
-            backImageId = mAllCards.get(i).getBackImageId();
-            mStartingCards.add(new Card(frontImageId, backImageId));
-            mStartingCards.add(new Card(frontImageId, backImageId));
+            Card card1 = new Card(mAllCards.get(i));
+            Card card2 = new Card(mAllCards.get(i));
+            card1.setPairId(i);
+            card2.setPairId(i);
+            mStartingCards.add(card1);
+            mStartingCards.add(card2);
         }
         Collections.shuffle(mStartingCards);
     }
@@ -157,7 +158,7 @@ public class GameLogicImpl implements GameLogic {
     }
 
     private boolean isPairFoundWith(Card clickedCard) {
-        return mPairOfCards[0].getFrontImageId() == clickedCard.getFrontImageId();
+        return mPairOfCards[0].getPairId() == clickedCard.getPairId();
     }
 
     private void endGameIfNecessary() {

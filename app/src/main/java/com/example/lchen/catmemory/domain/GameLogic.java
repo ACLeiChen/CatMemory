@@ -1,7 +1,7 @@
 package com.example.lchen.catmemory.domain;
 
-import com.example.lchen.catmemory.model.Card;
-import com.example.lchen.catmemory.model.User;
+import com.example.lchen.catmemory.domain.model.Card;
+import com.example.lchen.catmemory.domain.model.User;
 
 import java.util.List;
 

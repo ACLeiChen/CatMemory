@@ -1,10 +1,11 @@
-package com.example.lchen.catmemory.ui.BasicGame;
+package com.example.lchen.catmemory.presentation.ui.GameActivity;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
-import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
@@ -16,7 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.lchen.catmemory.R;
-import com.example.lchen.catmemory.model.Card;
+import com.example.lchen.catmemory.domain.model.Card;
 
 import java.util.List;
 
@@ -51,8 +52,14 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder>{
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         Card card = mCards.get(position);
         card.setCardActionExecutor(viewHolder);
-        //Glide.with(context).load(R.drawable.cat1).into(viewHolder.cardFrontImage);
-        viewHolder.cardFrontImage.setImageDrawable(getDrawable(card.getFrontImageId()));
+
+        Drawable frontImage;
+        if(card.getOnlineImage() == null){
+            frontImage = getDrawable(card.getFrontImageId());
+        }else{
+            frontImage = new BitmapDrawable(context.getResources(), (Bitmap) card.getOnlineImage());
+        }
+        viewHolder.cardFrontImage.setImageDrawable(frontImage);
 
         Drawable[] layers = new Drawable[2];
         layers[0] = getDrawable(R.drawable.rectangle);
@@ -82,9 +89,6 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder>{
         mCards = cards;
         notifyDataSetChanged();
     }
-
-
-
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, Card.CardActionExecutor {
 
@@ -124,37 +128,23 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder>{
         @Override
         public void flipCard(Card card) {
             if (card.isCatVisible()) {
-                flipOut();
-                //flip(mSetRightOut, cardFrontImage, mSetLeftIn, cardBackImage);
+                //flipOut
+                flip(mSetRightOut, cardFrontImage, 10000, mSetLeftIn, cardBackImage, 1000);
                 card.setIsCatVisible(false);
             } else {
-                flipIn();
-                //flip(mSetLeftOut, cardBackImage, mSetRightIn, cardFrontImage);
+                //flipIn
+                flip(mSetLeftOut, cardBackImage, 0, mSetRightIn, cardFrontImage, 0);
                 card.setIsCatVisible(true);
             }
         }
 
-        private void flip(Animator outAnimator, View outView, Animator inAnimator, View inView) {
+        private void flip(Animator outAnimator, View outView, int outDelay, Animator inAnimator, View inView, int inDelay) {
             outAnimator.setTarget(outView);
             inAnimator.setTarget(inView);
+            outAnimator.setStartDelay(outDelay);
+            inAnimator.setStartDelay(inDelay);
             outAnimator.start();
             inAnimator.start();
-        }
-
-        private void flipIn() {
-            mSetLeftOut.setTarget(cardBackImage);
-            mSetRightIn.setTarget(cardFrontImage);
-            mSetLeftOut.start();
-            mSetRightIn.start();
-        }
-
-        private void flipOut() {
-            mSetRightOut.setTarget(cardFrontImage);
-            mSetLeftIn.setTarget(cardBackImage);
-            mSetRightOut.setStartDelay(1000);
-            mSetLeftIn.setStartDelay(1000);
-            mSetRightOut.start();
-            mSetLeftIn.start();
         }
 
         @Override
@@ -163,7 +153,4 @@ public class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder>{
             cardBackImage.postDelayed(() -> cardBackImage.setVisibility(View.INVISIBLE), 1000);
         }
     }
-
-
-
 }

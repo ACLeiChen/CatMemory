@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    tools:context="com.example.lchen.catmemory.MainActivity"
+    tools:context="com.example.lchen.catmemory.presentation.ui.MainActivity.MainActivity"
     android:orientation="vertical">
 
     <!--<include layout="@layout/content_main" />-->

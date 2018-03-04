@@ -1,41 +1,30 @@
-package com.example.lchen.catmemory.ui.GameActivity;
+package com.example.lchen.catmemory.presentation.ui.GameActivity;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.PopupWindow;
 import android.widget.RatingBar;
-import android.widget.TextView;
 
-import com.example.lchen.catmemory.MainActivity;
+import com.example.lchen.catmemory.presentation.ui.MainActivity.MainActivity;
 import com.example.lchen.catmemory.MyApplication;
 import com.example.lchen.catmemory.R;
-import com.example.lchen.catmemory.model.Card;
-import com.example.lchen.catmemory.model.Difficulty;
-import com.example.lchen.catmemory.model.User;
-import com.example.lchen.catmemory.ui.BasicGame.BasicGameContract;
-import com.example.lchen.catmemory.ui.BasicGame.CardListener;
-import com.example.lchen.catmemory.ui.BasicGame.CardsAdapter;
+import com.example.lchen.catmemory.data.ImageUrls;
+import com.example.lchen.catmemory.domain.model.Card;
+import com.example.lchen.catmemory.domain.model.Difficulty;
+import com.example.lchen.catmemory.domain.model.User;
+import com.example.lchen.catmemory.presentation.util.ImageDownloadTask;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameActivity extends AppCompatActivity implements BasicGameContract.View{
+public class GameActivity extends AppCompatActivity implements GameContract.View{
 
-    private boolean mIsStarted = false;
-
-    private List<Card> mAllCards;
-
-    private BasicGameContract.Presenter mPresenter;
+    private GameContract.Presenter mPresenter;
 
     private CardListener mCardListener;
     private CardsAdapter mCardsAdapter;
@@ -47,8 +36,6 @@ public class GameActivity extends AppCompatActivity implements BasicGameContract
     private RatingBar user2Progress;
 
     RecyclerView mRecyclerView;
-    private PopupWindow mPopupWindow;
-    private View mPopUpView;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,9 +45,7 @@ public class GameActivity extends AppCompatActivity implements BasicGameContract
         difficulty = new Difficulty(intent.getStringExtra(MainActivity.EXTRA_DIFFICULTY));
         gridColumnNumber = intent.getIntExtra(MainActivity.EXTRA_GRID_COLUMN_NUMBER, 4);
 
-        initializeAllCards();
-
-        mPresenter = new GameActivityPresenter(this, difficulty, mAllCards, MyApplication.getGameRecordRepository());
+        mPresenter = new GameActivityPresenter(this, difficulty, MyApplication.getCardsRepositoryImpl(), MyApplication.getGameRecordRepository());
 
         mCardListener = new CardListener() {
             @Override
@@ -70,8 +55,6 @@ public class GameActivity extends AppCompatActivity implements BasicGameContract
         };
         mCardsAdapter = new CardsAdapter(new ArrayList<Card>(0), mCardListener, this);
 
-        mPresenter.startGame();
-
         mRecyclerView = findViewById(R.id.cards_grid);
         mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, gridColumnNumber));
@@ -79,25 +62,15 @@ public class GameActivity extends AppCompatActivity implements BasicGameContract
 
         user1Progress = findViewById(R.id.user1_progress);
         user2Progress = findViewById(R.id.user2_progress);
-
-    }
-
-    private void initializeAllCards() {
-        mAllCards = new ArrayList<>();
-        int backIconId = this.getResources().getIdentifier("cat_back", "drawable", this.getPackageName());
-        String drawableName;
-        int catResId;
-        for(int i = 1; i <= 20; i++){
-            drawableName = "cat" + i;
-            catResId = this.getResources().getIdentifier(drawableName, "drawable", this.getPackageName());
-            mAllCards.add(new Card(catResId, backIconId));
-        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mPresenter.loadCards();
+        if(!MyApplication.getCardsRepositoryImpl().isImageDownloadingFinished()){
+            MyApplication.getCardsRepositoryImpl().setFrontImagesFromLocalRes();
+        }
+        mPresenter.startGame();
     }
 
     @Override
@@ -107,28 +80,18 @@ public class GameActivity extends AppCompatActivity implements BasicGameContract
 
     @Override
     public void showFinalResult(User winner) {
-        showFinishDialog(winner);
-    }
-
-    private void showPopUp(User winner){
-        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);;
-        mPopUpView = layoutInflater.inflate(R.layout.pop_up_layout, null);
-
-        mPopupWindow = new PopupWindow(mPopUpView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        mPopupWindow.showAtLocation(mRecyclerView, Gravity.CENTER, 0, 0);
-        TextView textview = findViewById(R.id.pop_up_text);
-        textview.setText("User" + winner.getIndex() + " win!");
-    }
-
-    private void showFinishDialog(User winner){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("User" + winner.getIndex() + " win!");
-        builder.setPositiveButton(R.string.restart, ((dialog, which) -> {
+        String message = "User" + winner.getIndex() + " win!";
+        if (winner.getIndex() == 0){
+            message = "Draw game.";
+        }
+        builder.setMessage(message);
+        builder.setPositiveButton(R.string.restart, (dialog, which) -> {
             startActivity(getIntent());
-        }));
-        builder.setNegativeButton(R.string.back, ((dialog, which) -> {
+        });
+        builder.setNegativeButton(R.string.back, (dialog, which) -> {
             finish();
-        }));
+        });
         AlertDialog dialog = builder.create();
         dialog.show();
     }
